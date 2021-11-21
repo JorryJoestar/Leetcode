@@ -1,20 +1,26 @@
-排序类（Sort）：
+**排序类（Sort）：**
 
 基础知识：快速排序（Quick Sort）， 归并排序（Merge Sort）的原理与代码实现。需要能讲明白代码中每一行的目的。快速排序时间复杂度平均状态下O（NlogN），空间复杂度O（1），归并排序最坏情况下时间复杂度O（NlogN），空间复杂度O（N）<br>
+
 入门题目：<br>
 Leetcode 148. Sort List<br>
 Leetcode 56. Merge Intervals<br>
 Leetcode 27. Remove elements<br>
+
 进阶题目：<br>
 Leetcode 179. Largest Number<br>
 Leetcode 75. Sort Colors<br>
 Leetcode 215. Kth Largest Element<br>
 Leetcode 4. Median of Two Sorted Arrays<br>
+
 注意：后两题是与快速排序非常相似的快速选择（Quick Select）算法，面试中很常考
 
-链表类（Linked List）：
+---
+
+**链表类（Linked List）：**
 
 基础知识：链表如何实现，如何遍历链表。链表可以保证头部尾部插入删除操作都是O（1），查找任意元素位置O（N）<br>
+
 基础题目：<br>
 Leetcode 206. Reverse Linked List<br>
 Leetcode 876. Middle of the Linked List<br>
@@ -26,9 +32,12 @@ Leetcode 141. Linked List Cycle (Linked List Cycle II)<br>
 Leetcode 92. Reverse Linked List II<br>
 Leetcode 328. Odd Even Linked List<br>
 
-堆（Heap or Priority Queue）、栈（Stack）、队列（Queue）、哈希表类（Hashmap、Hashset）：
+---
+
+**堆（Heap or Priority Queue）、栈（Stack）、队列（Queue）、哈希表类（Hashmap、Hashset）：**
 
 基础知识：各个数据结构的基本原理，增删查改复杂度。<br>
+
 Queue题目：<br>
 Leetcode 225. Implement Stack using Queues<br>
 Leetcode 346. Moving Average from Data Stream<br>
@@ -36,6 +45,7 @@ Leetcode 281. Zigzag Iterator<br>
 Leetcode 1429. First Unique Number<br>
 Leetcode 54. Spiral Matrix<br>
 Leetcode 362. Design Hit Counter<br>
+
 Stack题目：<br>
 Leetcode 155. Min Stack (follow up Leetcode 716 Max Stack)<br>
 Leetcode 232. Implement Queue using Stacks<br>
@@ -46,6 +56,7 @@ Leetcode 1472. Design Browser History<br>
 Leetcode 1209. Remove All Adjacent Duplicates in String II<br>
 Leetcode 1249. Minimum Remove to Make Valid Parentheses<br>
 Leetcode 735. Asteroid Collision<br>
+
 Hashmap/ Hashset题目：<br>
 Leetcode 1. Two Sum<br>
 Leetcode 146. LRU Cache (Python中可以使用OrderedDict来代替)<br>
@@ -56,6 +67,7 @@ Leetcode 49. Group Anagrams<br>
 Leetcode 350. Intersection of Two Arrays II<br>
 Leetcode 299. Bulls and Cows<br>
 Leetcode 348 Design Tic-Tac-Toe<br>
+
 Heap／Priority Queue题目：<br>
 Leetcode 973. K Closest Points<br>
 Leetcode 347. Top k Largest Elements<br>
@@ -70,9 +82,12 @@ Leetcode 767. Reorganize String<br>
 Leetcode 1438. Longest Continuous Subarray With Absolute Diff Less Than or Equal to Limit (这个题用单调双端队列、TreeMap、双heap都可以)<br>
 Leetcode 895. Maximum Frequency Stack<br>
 
-二分法（Binary Search）：
+---
+
+**二分法（Binary Search）：**
 
 基础知识：二分法是用来解法基本模板，时间复杂度logN；常见的二分法题目可以分为两大类，显式与隐式，即是否能从字面上一眼看出二分法的特点：要查找的数据是否可以分为两部分，前半部分为X，后半部分为O
+
 显式二分法：<br>
 Leetcode 34. Find First and Last Position of Element in Sorted Array<br>
 Leetcode 33. Search in Rotated Sorted Array<br>
@@ -81,6 +96,7 @@ Leetcode 162. Find Peak Element<br>
 Leetcode 278. First Bad Version<br>
 Leetcode 74. Search a 2D Matrix<br>
 Leetcode 240. Search a 2D Matrix II<br>
+
 隐式二分法：<br>
 Leetcode 69. Sqrt(x)<br>
 Leetcode 540. Single Element in a Sorted Array<br>
@@ -91,13 +107,17 @@ Leetcode 1060. Missing Element in Sorted Array<br>
 Leetcode 1062. Longest Repeating Substring<br>
 Leetcode 1891. Cutting Ribbons<br>
 
-双指针（2 Pointer）：
+---
+
+**双指针（2 Pointer）：**
 
 基础知识：常见双指针算法分为三类，同向（即两个指针都相同一个方向移动），背向（两个指针从相同或者相邻的位置出发，背向移动直到其中一根指针到达边界为止），相向（两个指针从两边出发一起向中间移动直到两个指针相遇）<br>
+
 背向双指针：(基本上全是回文串的题)<br>
 Leetcode 409. Longest Palindrome<br>
 Leetcode 125. Valid Palindrome<br>
 Leetcode 5. Longest Palindromic Substring<br>
+
 相向双指针：(以two sum为基础的一系列题)<br>
 Leetcode 1. Two Sum (这里使用的是先排序的双指针算法，不同于hashmap做法)<br>
 Leetcode 167. Two Sum II - Input array is sorted<br>
@@ -107,6 +127,7 @@ Leetcode 18. 4Sum<br>
 Leetcode 454. 4Sum II<br>
 Leetcode 277. Find the Celebrity<br>
 Leetcode 11. Container With Most Water<br>
+
 同向双指针：（个人觉得最难的一类题，可以参考下这里 TimothyL：Leetcode 同向双指针/滑动窗口类代码模板）<br>
 Leetcode 283. Move Zeroes<br>
 Leetcode 26. Remove Duplicate Numbers in Array<br>
@@ -116,41 +137,50 @@ Leetcode 424. Longest Repeating Character Replacement<br>
 Leetcode 76. Minimum Window Substring<br>
 Leetcode 3. Longest Substring Without Repeating Characters<br>
 Leetcode 1004 Max Consecutive Ones III<br>
-宽度优先搜索（BFS）：面试中最常考的
+
+---
+
+**宽度优先搜索（BFS）：面试中最常考的**
 
 基础知识：
 常见的BFS用来解决什么问题？(1) 简单图（有向无向皆可）的最短路径长度，注意是长度而不是具体的路径（2）拓扑排序 （3） 遍历一个图（或者树）
 BFS基本模板（需要记录层数或者不需要记录层数）
 多数情况下时间复杂度空间复杂度都是O（N+M），N为节点个数，M为边的个数
-基于树的BFS：不需要专门一个set来记录访问过的节点
-Leetcode 102 Binary Tree Level Order Traversal
-Leetcode 103 Binary Tree Zigzag Level Order Traversal
-Leetcode 297 Serialize and Deserialize Binary Tree （很好的BFS和双指针结合的题）
-Leetcode 314 Binary Tree Vertical Order Traversal
-基于图的BFS：（一般需要一个set来记录访问过的节点）
-Leetcode 200. Number of Islands
-Leetcode 133. Clone Graph
-Leetcode 127. Word Ladder
-Leetcode 490. The Maze
-Leetcode 323. Connected Component in Undirected Graph
-Leetcode 130. Surrounded Regions
-Leetcode 752. Open the Lock
-Leetcode 815. Bus Routes
-Leetcode 1091. Shortest Path in Binary Matrix
-Leetcode 542. 01 Matrix
-Leetcode 1293. Shortest Path in a Grid with Obstacles Elimination
-拓扑排序：（https://zh.wikipedia.org/wiki/%E6%8B%93%E6%92%B2%E6%8E%92%E5%BA%8F）
-Leetcode 207 Course Schedule （I, II）
-Leetcode 444 Sequence Reconstruction
-Leetcode 269 Alien Dictionary
 
-深度优先搜索（DFS）：面试中最常考的
+基于树的BFS：不需要专门一个set来记录访问过的节点
+Leetcode 102 Binary Tree Level Order Traversal<br>
+Leetcode 103 Binary Tree Zigzag Level Order Traversal<br>
+Leetcode 297 Serialize and Deserialize Binary Tree （很好的BFS和双指针结合的题）<br>
+Leetcode 314 Binary Tree Vertical Order Traversal<br>
+
+基于图的BFS：（一般需要一个set来记录访问过的节点）
+Leetcode 200. Number of Islands<br>
+Leetcode 133. Clone Graph<br>
+Leetcode 127. Word Ladder<br>
+Leetcode 490. The Maze<br>
+Leetcode 323. Connected Component in Undirected Graph<br>
+Leetcode 130. Surrounded Regions<br>
+Leetcode 752. Open the Lock<br>
+Leetcode 815. Bus Routes<br>
+Leetcode 1091. Shortest Path in Binary Matrix<br>
+Leetcode 542. 01 Matrix<br>
+Leetcode 1293. Shortest Path in a Grid with Obstacles Elimination<br>
+
+拓扑排序：（https://zh.wikipedia.org/wiki/%E6%8B%93%E6%92%B2%E6%8E%92%E5%BA%8F）<br>
+Leetcode 207 Course Schedule （I, II）<br>
+Leetcode 444 Sequence Reconstruction<br>
+Leetcode 269 Alien Dictionary<br>
+
+---
+
+**深度优先搜索（DFS）：面试中最常考的**
 
 基础知识：
 常见的DFS用来解决什么问题？(1) 图中（有向无向皆可）的符合某种特征（比如最长）的路径以及长度（2）排列组合（3） 遍历一个图（或者树）（4）找出图或者树中符合题目要求的全部方案
 DFS基本模板（需要记录路径，不需要返回值 and 不需要记录路径，但需要记录某些特征的返回值）
 除了遍历之外多数情况下时间复杂度是指数级别，一般是O(方案数×找到每个方案的时间复杂度)
 递归题目都可以用非递归迭代的方法写，但一般实现起来非常麻烦
+
 基于树的DFS：需要记住递归写前序中序后序遍历二叉树的模板<br>
 Leetcode 543 Diameter of Binary Tree<br>
 Leetcode 226 Invert Binary Tree<br>
@@ -165,6 +195,7 @@ Leetcode 1485 Clone Binary Tree With Random Pointer<br>
 Leetcode 572 Subtree of Another Tree<br>
 Leetcode 863 All Nodes Distance K in Binary Tree<br>
 Leetcode 1110 Delete Nodes And Return Forest<br>
+
 二叉搜索树（BST）：BST特征：中序遍历为单调递增的二叉树，换句话说，根节点的值比左子树任意节点值都大，比右子树任意节点值都小，增删查改均为O（h）复杂度，h为树的高度；注意不是所有的BST题目都需要递归，有的题目只需要while循环即可<br>
 Leetcode 230 Kth Smallest element in a BST<br>
 Leetcode 98 Validate Binary Search Tree<br>
@@ -175,6 +206,7 @@ Leetcode 700 Search in a Binary Search Tree<br>
 Leetcode 108 Convert Sorted Array to Binary Search Tree<br>
 Leetcode 333 Largest BST Subtree (与98类似)<br>
 Leetcode 285 Inorder Successor in BST (I, II)<br>
+
 基于图的DFS: 和BFS一样一般需要一个set来记录访问过的节点，避免重复访问造成死循环; Word XXX 系列面试中非常常见，例如word break，word ladder，word pattern，word search。<br>
 Leetcode 341 Flatten Nested List Iterator (339 364)<br>
 Leetcode 394 Decode String<br>
@@ -193,6 +225,7 @@ Leetcode 1274 Number of Ships in a Rectangle<br>
 Leetcode 1376 Time Needed to Inform All Employees<br>
 Leetcode 694 Number of Distinct Islands<br>
 Leetcode 131 Palindrome Partitioning<br>
+
 基于排列组合的DFS: 其实与图类DFS方法一致，但是排列组合的特征更明显<br>
 Leetcode 17 Letter Combinations of a Phone Number<br>
 Leetcode 39 Combination Sum（I, II, III相似， IV为动态规划题目）<br>
@@ -201,6 +234,7 @@ Leetcode 46 Permutation (I, II 重点在于如何去重)<br>
 Leetcode 77 Combinations (I, II 重点在于如何去重)<br>
 Leetcode 698 Partition to K Equal Sum Subsets<br>
 Leetcode 526 Beautiful Arrangement (similar to 46)<br>
+
 记忆化搜索（DFS + Memoization Search）：算是动态规划的一种，递归每次返回时同时记录下已访问过的节点特征，避免重复访问同一个节点，可以有效的把指数级别的DFS时间复杂度降为多项式级别; 注意这一类的DFS必须在最后有返回值，不可以用排列组合类型的DFS方法写; for循环的dp题目都可以用记忆化搜索的方式写，但是不是所有的记忆化搜索题目都可以用for循环的dp方式写。<br>
 Leetcode 139 Word Break II<br>
 Leetcode 72 Edit Distance<br>
@@ -213,36 +247,53 @@ Leetcode 472 Concatenated Words<br>
 Leetcode 403 Frog Jump<br>
 Leetcode 329 Longest Increasing Path in a Matrix<br>
 
-前缀和（Prefix Sum）<br>
+---
+
+**前缀和（Prefix Sum）<br>**
 
 基础知识：前缀和本质上是在一个list当中，用O（N）的时间提前算好从第0个数字到第i个数字之和，在后续使用中可以在O（1）时间内计算出第i到第j个数字之和，一般很少单独作为一道题出现，而是很多题目中的用到的一个小技巧<br>
+
 常见题目：<br>
 Leetcode 53 Maximum Subarray<br>
 Leetcode 1423 Maximum Points You Can Obtain from Cards<br>
 Leetcode 1031 Maximum Sum of Two Non-Overlapping Subarrays<br>
 Leetcode 523 Continuous Subarray Sum<br>
 Leetcode 304 Range Sum Query 2D - Immutable<br>
+
+---
+
 以上内容皆为面试中高频的知识点，以下知识点和题目在面试中属于中等频率（大概面10道题会遇到一次），时间不足的情况下，请以准备上面的知识点为主。<br>
 
-并查集（Union Find）：把两个或者多个集合合并为一个集合<br>
+---
+
+**并查集（Union Find）：把两个或者多个集合合并为一个集合<br>**
 
 基础知识：如果数据不是实时变化，本类问题可以用BFS或者DFS的方式遍历，如果数据实时变化（data stream）则并查集每次的时间复杂度可以视为O（1）；需要牢记合并与查找两个操作的模板
+
 常见题目：<br>
 Leetcode 721 Accounts Merge<br>
 Leetcode 547 Number of Provinces<br>
 Leetcode 737 Sentence Similarity II<br>
 Leetcode 305 Number of Islands II<br>
-字典树（Trie）<br>
+
+---
+
+**字典树（Trie）<br>**
 
 基础知识：（https://zh.wikipedia.org/wiki/Trie）；多数情况下可以通过用一个set来记录所有单词的prefix来替代，时间复杂度不变，但空间复杂度略高<br>
+
 常见题目：<br>
 Leetcode 208 Implement Trie (Prefix Tree)<br>
 Leetcode 211 Design Add and Search Words Data Structure<br>
 Leetcode 1268 Search Suggestions System<br>
 Leetcode 212 Word Search II<br>
-单调栈与单调队列（Monotone Stack／Queue）<br>
+
+---
+
+**单调栈与单调队列（Monotone Stack／Queue）<br>**
 
 基础知识：单调栈一般用于解决数组中找出每个数字的第一个大于／小于该数字的位置或者数字；单调队列只见过一道题需要使用；不论单调栈还是单调队列，单调的意思是保留在栈或者队列中的数字是单调递增或者单调递减的<br>
+
 常见题目：<br>
 Leetcode 85 Maximum Rectangle<br>
 Leetcode 84 Largest Rectangle in Histogram<br>
@@ -251,16 +302,24 @@ Leetcode 739 Daily Temperatures<br>
 Leetcode 901 Online Stock Span<br>
 Leetcode 503 Next Greater Element II<br>
 Leetcode 239 Sliding Window Maximum （唯一的单调队列题）<br>
-扫描线算法（Sweep Line）<br>
+
+---
+
+**扫描线算法（Sweep Line）<br>**
 
 基础知识：一个很巧妙的解决时间安排冲突的算法，本身比较容易些也很容易理解<br>
+
 常见题目：<br>
 Leetcode 253 Meeting Room II（Meeting Room I也可以使用）<br>
 Leetcode 218 The Skyline Problem<br>
 Leetcode 759 Employee Free Time<br>
 
-TreeMap<br>
+---
+
+**TreeMap<br>**
+
 基础知识：基于红黑树（平衡二叉搜索树）的一种树状 hashmap，增删查改、找求大最小均为logN复杂度，Python当中可以使用SortedDict替代；SortedDict继承了普通的dict全部的方法，除此之外还可以peekitem(k)来找key里面第k大的元素，popitem(k)来删除掉第k大的元素，弥补了Python自带的heapq没法logN时间复杂度内删除某个元素的缺陷；最近又在刷一些hard题目时候突然发现TreeMap简直是个神技，很多用别的数据结构写起来非常麻烦的题目，TreeMap解决起来易如反掌。<br>
+
 常见题目：<br>
 Leetcode 729 My Calendar I<br>
 Leetcode 981 Time Based Key-Value Store<br>
@@ -269,9 +328,12 @@ Leetcode 218 The Skyline Problem<br>
 Leetcode 480. Sliding Window Median (这个题用TreeMap超级方便)<br>
 Leetcode 318 Count of Smaller Numbers After Self (这个题线段树、二分索引树、TreeMap都可以)<br>
 
-动态规划（Dynamic Programming）<br>
+---
+
+**动态规划（Dynamic Programming）<br>**
 
 基础知识：这里指的是用for循环方式的动态规划，非Memoization Search方式。DP可以在多项式时间复杂度内解决DFS需要指数级别的问题。常见的题目包括找最大最小，找可行性，找总方案数等，一般结果是一个Integer或者Boolean。动态规划有很多分支，暂时还没想好怎么去写这部分，后面想好了再具体写吧。<br>
+
 常见题目：<br>
 Leetcode 674 Longest Continuous Increasing Subsequence (接龙型dp)<br>
 Leetcode 62 Unique Paths II<br>
