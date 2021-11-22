@@ -1,0 +1,1943 @@
+chapter2
+	~system calls (standard library)							P40
+		APIs provided by OS
+	~virtualizing the CPU 										P42
+		turning a single CPU into a seemingly infinite number
+		of CPUs that can run at the same time
+	~virtualizing memory										P44
+		provide processes with their own own private virtual
+		address space
+	~file system												P47
+		part of OS that manages the disk
+		no private, virtualized disk for each application
+
+chapter4
+	~process 													P61
+		the abstraction of running program
+	~process creation 											P64
+		-memory
+			-load program and static data into memory
+			-allocated run-time stack
+				for local variables, function parameters and
+				return addresses
+			-create heap
+				-malloc()/free()
+				-linked lists, hash tables, trees etc.
+				-allocated dynamically
+		-IO initialization tasks
+		-transfer CPU control to process by jumping to the
+			main() routine
+	~process states 											P65 Figure 4.2
+		-Running
+			-descheduled    to 		Ready
+			-I/O: initiate  to 		Blocked
+		-Ready
+			-Scheduled      to 		Running
+		-Blocked
+			-I/O: done 		to 		Ready
+	~OS data structures 										P66
+		-process list
+			all processes that are ready
+		-Process Control Block (PCB) 							Figure 4.3
+			information about each process
+
+chapter5
+	~process creation API
+		-fork() system call 									P71
+			-created an almost exact copy of the calling 
+				process
+			-new process begins at fork()
+			-fork() return new PID to parent process and 0 to
+				new created process
+			-which(parent or child) runs first is not 
+				deterministic
+		-wait() system call 									P73
+			-used by a parent to wait until child ends
+			-return PID of child that it waits
+		-exec() system call 									P74
+			-transforms the currently running program into a
+				different running program
+			-does not create a new process
+
+chapter6
+	~Limited Direction Execution 								P82 Table 6.2
+		-user mode
+			-application code is restricted
+			-trap to kernel mode
+				program executes trap instruction to execute 
+				a system call
+		-kernel mode
+			-OS code can do all restricted operations
+			-return-from-trap to user mode
+				when finished, OS calls return-from-trap 
+				instruction
+		-kernel stack
+			save application code register information
+		-trap table
+			-set up when boots up
+			-assign codes(trap handlers) for hardware 
+				corresponding to certain exceptions
+			-system call is exactly a kind of exception
+	~switch between processes									P86
+		-OS regains control
+			-cooperative approach
+				wait a yield system call
+				(does nothing except return control to OS)
+			-non-cooperative approach
+				use a timer interrupt
+		-context switch 			 							P88
+			-timer interrupt asks hardware to save current
+				process registers into kernel stack
+			-if scheduler decides to switch from process A
+				to process B, reg(A) is saved into PCB and
+				reg(B) is restored from PCB to kernel stack
+			-restore reg(B) from k-stack and enter user mode
+
+chapter7
+	~scheduler policies 										P95
+		-assumptions
+			-whether each job runs for same amount of time
+			-whether all jobs arrive at the same time
+			-whether IO operation engaged
+			-whether run-time of each job is known
+		-metrics
+			-turnaround time									
+				T(turnaround) = T(completion) − T(arrival)
+			-response time
+				T(response)   = T(firstrun)   − T(arrival)
+		-algorithms
+			-first in first out
+			-shortest job first
+			-shortest time-to-completion first
+			-round-robin
+
+chapter8
+	~multi-level feedback queue 								P107
+		-aims
+			-optimize turnaround time
+			-infer runtime of jobs
+			-minimize response time for interactive jobs
+			-prevent starving for CPU-intensive jobs
+			-prevent gaming the scheduler
+		-rules
+			-if Priority(A) > Priority(B), A runs
+			-if Priority(A) = Priority(B), A & B run in RR
+			-when a job enters the system, it is placed at the 
+				highest priority (the topmost queue)
+			-once a job uses up its time allotment at a given 
+				level, its priority is reduced
+			-after some time period S, move all the jobs in the 
+				system to the topmost queue
+		-mechanisms
+			-queues with different priority level
+			-varying time-slice length across different queues
+
+chapter9
+	~proportional-share scheduler 								P119
+		-aiming
+			each job to finish at roughly the same time
+		-lottery scheduling
+			-tickets
+				the share of a resource that a process receives
+			-ticket mechanisms
+				-ticket currency
+					converts local currency into global value
+				-ticket transfer
+					a process can temporarily hand off its 
+					tickets to another process
+				-ticket inflation
+					a process can temporarily raise or lower 
+					the number of tickets it owns
+			-implementation
+				-pick a random number from all of the tickets
+				-iterate ticket numbers of processes to find 
+					which one to run
+		-stride scheduling
+			-stride 
+				= constant / ticket
+			-pass
+				incremented by one stride every time a process
+				runs
+			-pick the process with smallest pass to run
+		-advantage of lottery
+			no global state per process so avoid new process 
+			to monopolize CPU
+
+chapter10
+	~cache coherence 											P132
+		multi-CPUs each has a cache, if one CPU didn't update
+		data from its cache to memory, then other CPU who 
+		access data from memory could have wrong data
+		-notice: multi-CPU could share data in memory so lock
+		 is needed sometimes
+	~cache affinity 											P133
+		scheduler prefers to allocate a process the same CPU it
+		owned, for the cache may remain its former data so it
+		runs faster
+	~multi-queue multiprocessor scheduling (MQMS) 				P135
+		could have one queue per CPU, so be scalable
+	~load imbalance 											P137
+		process migration from heavy burden queue to low one
+
+chapter13
+	~address space 												P147 Figure 13.3
+		-components
+			-code
+				instructions
+			-stack
+				function call chain, local variables
+			-heap
+				dynamically-allocated, user-managed memory
+		-an abstraction of physical memory
+	~goals
+		-transparency
+			invisible to the running program
+		-efficiency
+		-protection
+			create isolation among processes
+
+chapter14
+	~memory type 												P119
+		-stack (automatic) memory
+			managed implicitly by the compiler to save local 
+			variables, parameters
+		-heap memory
+			managed explicitly by programmer to save long-lived
+			data using malloc
+	~free()
+		takes a pointer that was returned by malloc as argument
+		and free heap memory
+	~common errors 												P158
+	~mmap()
+		create an anonymous memory region associated with swap
+		space
+	~realloc()
+		makes a new larger region of memory and copies the old
+		region into it
+
+chapter15
+	~address translation 										P166
+		-base register
+			starting address in physical address
+		-bounds(limit) register
+			ending address in virtual address, make sure legal
+		-translation
+			physical address = virtual address + base
+	~free list
+		OS data structure, a list of vacant physical memory
+	~memory management unit (MMU)
+		part of the processor used in address translation
+
+chapter16
+	~segmentation 												P177
+		-aims
+			divide address space into segments to save space
+		-canonical logical segments
+			-code
+			-heap
+			-stack
+		-segment reference
+			-explicit approach
+				top few bits of the virtual address show which
+				segment, rest of virtual address is offset
+			-implicit approach
+				if address from PC, it belongs to code segment
+				if address from base register or stack, stack
+				else belongs to heap
+		-MMU
+			-a base and bounds pair per segment
+			-positive grow bit
+				to identify stack
+			-protection bit
+				show readable or writable, if read-only then
+				the segment can be shared by processes
+		-segmentation strategy
+			-fine-grained
+				chops address space into large chunks
+			-coarse-grained
+				chuncks are small, need a segment table
+	~translation
+		-for code and heap
+			(offset) = (virtual address) - (current segment start address in virtual address)
+				(or directly from virtual address discarding first several bits that show segments)
+			(physical address) = (offset) + (base register of current segment)
+		-for stack
+			get offset from virtual address discarding first several bits that show segments
+			(negative offset) = (offset) - (segment size)
+			(physical address) = (negative) + (base register of current segment)
+		-bound check
+			check if offset greater than bounds register
+	~external fragmentation solution
+		-rearrange existing segments to compact physical memory
+			time-cost
+		-use free-list management algorithm
+			(best-fit, worst-fit, first-fit, buddy algorithm)
+
+chapter17
+	~heap 														P190
+		space that can be allocated & freed in random size
+	~internal fragmentation										P190
+		memory bigger than that requested is allocated
+	~low level mechanisms										P191
+		-splitting & coalescing									P191
+		-header block of allocated memory 						P193 Figure 17.2
+				|---------------| <- hptr
+				| size:		  20| (size of allocated memory)
+				|---------------|
+				| magic: 1234567| (integrity checking)
+				|---------------| <- ptr
+				| allocated 	|
+				| memory		|
+				| ...			|
+				(header structure)
+			ptr = malloc(size), ptr points to allocated memory
+			header block is right before allocated memory
+			*hptr = (void *)ptr - sizeof(header_t)
+			total size = header size + allocated memory
+		-embedded free list 									P194
+				|---------------| <- head / other node's next
+				| size:	    4088| (size of this free chunk)
+				|---------------|
+				| next:		   0| (address of next free chunk)
+				|---------------|
+				| free chunk	|
+				| ...			|
+			(free list node structure)
+		-heap growing
+			some allocators support dynamic size heap
+	~allocation strategies  									P199
+		-best fit
+			choose smallest chunk that can fit required size
+		-worst fit
+			choose largest chunk that can fit required size
+		-first fit
+			choose the first chunk that meet requirement,
+			always begin from head pointer
+		-next fit
+			choose the first chunk that meet requirement,
+			but begin from next chunk of last turn
+		-segregated lists
+			keep a separate list for popular-sized requests,
+			other requests use general memory allocator
+		-buddy allocation
+			recursively divides free space by two until more
+			division makes chunk too small
+			if freed, recursively checks whether same size
+			buddy is free to coalesce
+			address of each buddy pair only differs by 
+			a single bit
+
+chapter18
+	~paging 													P205
+		split up address space into fixed-sized units (page)
+	~page frame 												P206
+		each page of physical memory
+	~page table 												P206
+		-a per-process data structure that stores address 
+		 translations from virtual page number(VPN) to page 
+		 frame number(PFN)
+		-page table entry (PTE) 								P208 P209 Figure 18.5
+		-stored in memory instead of special on-chip hardware
+		-problems
+			too large like a big array
+			too slow: one extra memory access for PTE from 
+				virtual address, solved by TLB
+	~virtual address split 										P207
+		-virtual page number (VPN)
+		-offset
+
+chapter19
+	~TLB (translation-lookaside buffer) 						P219
+		part of the chip’s MMU
+		a hardware cache of popular page table entrys
+		-basic algorithm
+			find the translation in the TLB, if not success,
+			find the page table, load the entry into TLB and
+			do find in the TLB again
+		-TLB miss handler
+			-by hardware (CISC)
+				hardware searches entry in page table
+			-by OS (RISC)
+				when TLB miss, hardware raises an exception,
+				then trap handler in OS sovles the miss 
+			-important details
+				-unlike normal exception which resume execution
+					at the instruction after the trap, TLB 
+					miss-handling trap resume execution at the
+					instruction that caused the trap
+				-avoid an infinite chain of TLB misses which
+					caused by missing TLB miss handlers
+			-pagetable base register(ptbr)
+				used to locate page table
+		-context switches
+			-always change ptbr
+			-approach one
+				empty TLB before next process by setting TLB
+				valid bits to 0 for every entrys
+			-approach two
+				share TLB across processes by address space
+				identifier (ASID) field in TLB to differ
+				processes
+		-replacement policy
+			-evict the least-recently-used(LRU) entry
+			-random policy
+		-TLB entry
+				VPN | PFN | other bits
+			-difference of valid bit between TLB and page table
+				TLB valid bit: valid for current process
+				page table valid bit: if invalid, haven't been
+					allocated
+			-MIPS TLB entry 									P229 Figrure 19.4
+				-global bit(G)
+					1 if globally-shared among processes, ASID 
+					is ignored
+				-dirty bit(D)
+					1 if page has been written to
+				-valid bit(V)
+					1 if a valid translation in the entry
+				-page mask field
+					supports multiple page sizes
+
+chapter20
+	~methods to decrease the size of page table 				P237
+		-bigger tables
+			resulting internal fragmentation
+		-hybrid of segment and paging
+			-each segment has a page table, base register is
+			 used to save physical address of page table
+			-virtual address has three parts: seg, VPN, offset
+			-bounds register holds value of the maximum valid 
+			 page in the segment
+			-not flexible, helpless to sparsely-used heap,
+			 page tables can be of arbitrary size so it's hard
+			 to find free space for them
+		-multi-level page tables 								Figure 20.2
+			-chop and save page table in separated pages
+			-page directory is used to save those pages whose
+				entrys are not all invalid
+			-page directory entries(PDE) saved by page 
+				directory, it has a valid bit and PFN
+			-advantages
+				-allocate less space and seperately
+				-page table fits within a page, so it's easy
+					to manage
+			-disadvantages
+				-more memory accesses when TLB miss
+				-more complicated in hardware and OS
+			-virtual address structure 							P245 Figure
+				-VPN
+					-Page Directory Index
+					-Page Table Index
+				-offset
+			-more than two levels
+				if page directory is larger than one page, 
+				adding another page directory to point to the 
+				pages of the page directory
+			-inverted page tables
+				keep a single page table that has an entry for 
+				each physical page, use hashtable to speed up
+
+chapter21
+	~swap space													P254
+		space on the disk for moving pages from and to
+	~present bit 												P255
+		a bit in PTE to show whether page present in physical
+		memory, if 0 resulting a page fault exeception
+	~page fault 												P256
+		-OS is charged to solve a page fault
+		-hardware is not charged to reduce the complexity of
+			hardware, and disk operation is time cost so OS
+			instruction can be ignored
+		-PTE usually saves disk address to swap in a page
+	~complete control flow of memory access 					Figure 21.2 Figure 21.3
+	~swap daemon (page daemon) 									P259
+		instead of swap out one page to disk at one time,
+		define a high watermark and a low watermark of number
+		of unallocated memory page frame, if the number under
+		low watermark then swap daemon(thread) is woke to swap
+		a cluster of pages to disk to increase disk efficiency
+
+chapter22
+	~relpacement policy 										P263
+		-average memory access time (AMAT)
+			AMAT = (Hit% · TM ) + (Miss% · TD)
+		-optimal policy											P264
+			replaces the page that will be accessed furthest in 
+			the future, can not be achieved because no way to
+			predict the future
+		-FIFO
+			-Belady’s Anomaly
+				when the cache gets larger, performance has a
+				chance to decrease
+		-random
+		-LRU(least-recently-used)
+		-performance
+			-no-locality workload
+				FIFO, random, LRU performs almost the same,
+					opt the best
+			-80-20 workload
+				hot pages: 80% of the references are made to 
+					20% of the pages
+				cold pages: 20% of the references are made to 
+					80% of the pages
+				opt the best, LRU sightly worse, random & FIFO
+					similarly worse
+			-looping sequential workload 						P273 Figure 22.4
+				opt the best, random pretty great because of
+					the property that not having weird 
+					corner-case behaviors, if loop long enough
+					then FIFO & LRU reach the worst case
+		-approximating LRU
+			easy to realise than normal LRU, sets a use bit for
+				every page in page tables or hardware
+			clock algorithm: randomly (or cyclically) scans
+				pages when doing a replacement, if use bit is 1
+				then set it to 0, if 0 set the page as victim
+		-dirty pages
+			dirty means modified pages, evict dirty pages need
+				more IO operation to copy it back to disk, so
+				try to avoid to choose a dirty page as victim,
+				use a dirty bit
+		-page selection policy
+			decide when to bring a page into memory
+			-demand paging
+				brings the page into memory when it is accessed
+			-prefetching
+		-thrashing
+			memory demands exceed the available physical memory
+			so system will constantly be paging, called 
+			thrashing
+			-admission control: decide not to run a subset of 
+				processes
+
+chapter23
+	~null-pointer detecting										P284
+		page 0 is reserved as empty so when to access a 
+		null-pointer, OS finds entry for VPN 0 is marked as
+		invalid, so generate a segmentation fault
+	~segmented FIFO 											P285
+		-resident set size (RSS): maximum number of pages a 
+			process can keep
+		-two global second-chance lists
+			-clean-page free list
+			-dirty-page list
+			if a process needs free page, first page ofthese 
+			 two lists become victims, but if pages from these 
+			 lists are accessed before that, they will be saved
+			 from the lists
+	~page clustering 											P285
+		groups large batches of pages together from the global
+		dirty list and writes them to disk together so perform
+		fewer and bigger writes
+	~demand zeroing 											P286
+		delay allocating and zeroing a page until the process
+		really wants to read & write it
+	~copy-on-write (COW) 										P287
+		when copy a page from one address space to another,
+		just map it into target address space and mark it 
+		read-only in both address spaces, only do copy when
+		either spaces want to write
+
+chapter26
+	~thread 													P299
+		-has private PC and registers state
+		-context switch is needed to switch from one thread to
+			another
+		-thread control block(TCB) is used to store states
+		-threads of one process share address space so there's
+			no need to switch page table
+		-each thread has a private stack
+	~thread creation 											P301 Figure 26.2
+		run in different orders depend on scheduler
+	~sharing data 												P303 Figure 26.3
+		threads manipulate the same data may cause mistakes
+	~objdump
+		tool to do disassemble
+		terminal> objdump -d execFileName
+	~race condition: 
+		arises if multiple threads enter the critical section 
+		at roughly the same time, the outcome is unpredictable
+	~critical section: 
+		a piece of code that accesses a shared resource and 
+		must not be concurrently executed by more than one 
+		thread
+	~mutual exclusion:
+		a property that if one thread is executing within the 
+		critical section, the others will be prevented
+	~atomicity 													P307
+		synchronization primitives: a set of instructions that
+		run as a unit
+	~two interactions between threads
+		-accessing shared variables
+		-waiting for some conditions to complete before it 
+		 continues
+
+chapter27
+	~thread creation 											P315
+		#include <pthread.h>
+		int pthread_create( pthread_t * thread,
+							const pthread_attr_t * attr,
+							void * (*start_routine)(void*), 
+							void * arg);
+	~thread completion (join) 									P316
+		int pthread_join(pthread_t thread, 
+						 void **value_ptr);
+	~locks 														P319
+		providing mutual exclusion to a critical section
+		-rough example
+			int pthread_mutex_lock(pthread_mutex_t *mutex); 
+			x = x+1;  		//critical section
+			int pthread_mutex_unlock(pthread_mutex_t *mutex);
+		-compulsory initialization (two ways)
+			-pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
+			-int rc = pthread_mutex_init(&lock, NULL); 
+			 assert(rc == 0);
+		-destory the lock
+			pthread cond destroy()
+		-check errors
+			void Pthread_mutex_lock(pthread_mutex_t *mutex)
+			{
+		        int rc = pthread_mutex_lock(mutex);
+		        assert(rc == 0);
+	       	}
+	    -turns failure when lock is already held or timeout
+	    	int pthread_mutex_trylock(pthread_mutex_t *mutex); 
+	    	int pthread_mutex_timedlock(pthread_mutex_t *mutex, struct timespec *abs_timeout);
+	~condition variables 										P321
+		-puts the calling thread to sleep
+			pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER; 
+			pthread_cond_t init = PTHREAD_COND_INITIALIZER;
+			Pthread_mutex_lock(&lock);
+			while (initialized == 0)
+				Pthread_cond_wait(&init, &lock);
+			Pthread_mutex_unlock(&lock);
+		-wake a thread that run in some other thread
+			Pthread_mutex_lock(&lock);
+			initialized = 1;
+			Pthread_cond_signal(&init);
+			Pthread_mutex_unlock(&lock);
+		-note:
+			signaling and global variable modification should 
+			be hold in lock
+			wait call takes a lock as its second parameter for 
+			releasing the lock when putting it to sleep
+			always make the waiting thread re-checks the 
+			condition in a while loop
+			termical> man -k pthread
+
+chapter28
+	~lock criteria
+		-mutual exclusion (basic task)
+		-fairness (preventing starve)
+		-performance
+	~reason for not using disable interrupts to realise mutual 
+	 exclusion
+	 	-allow user to perform a privileged operation
+	 	-useless to multiprocessors
+	 	-poor performance
+	 ~use algorithm to realise lock is out of date 				P331
+	 ~test-and-set instruction (atomic exchange) 				P333
+	 	int TestAndSet(int *ptr, int new) {
+			int old = *ptr;
+			*ptr = new;
+			return old;
+		}
+		-spin locks
+			void lock(lock_t *lock) {
+				while (TestAndSet(&lock->flag, 1) == 1)
+					;
+			}
+			-poor in performance &fairness
+		-run atomically
+		-ralised by hardware
+		-preemptive scheduler: 
+			interrupt a block thread and regain control of CPU
+			from it
+	~compare-and-swap instruction (compare-and-exchange)
+		int CompareAndSwap(int *ptr, int expected, int new) { 
+			int actual = *ptr;
+			if (actual == expected)
+ 				*ptr = new;
+			return actual;
+		}
+		-used in wait-free synchronization
+	~load-linked instruction 									P337
+		int LoadLinked(int *ptr){
+			return *ptr;
+		}
+	~store-conditional instruction
+		int StoreConditional(int *ptr, int value) {
+			if (no one has updated *ptr since the LoadLinked to this address) {
+				*ptr = value;
+				return 1; // success! 
+			} else{
+				return 0; // failed to update 
+			}
+		}
+	~using LL/SC to build a lock 								P337
+		void lock(lock_t *lock) {
+			while(1){
+				while(LoadLinked(&lock->flag)==1)
+					;
+				if(StoreConditional(&lock->flag, 1)==1)
+					return;
+			}
+		}
+		void lock(lock_t *lock) {  //another implementation
+			while (LoadLinked(&lock->flag)||!StoreConditional(&lock->flag, 1))
+				;
+		}
+		void unlock(lock_t *lock) {
+			lock->flag = 0;
+		}
+	~fetch-and-add instruction 									P338
+		int FetchAndAdd(int *ptr) { 
+			int old = *ptr;
+	    	*ptr = old + 1;
+	    	return old;
+    	}
+    	-used in ticket lock
+    ~ticket lock
+    	typedef struct __lock_t { 
+	    	int ticket;
+	    	int turn;
+		} lock_t;
+		void lock_init(lock_t *lock) { 
+			lock->ticket = 0; 
+			lock->turn = 0;
+		}
+		void lock(lock_t *lock) {
+			int myturn = FetchAndAdd(&lock->ticket); 
+			while (lock->turn != myturn)
+				;
+		}
+		void unlock(lock_t *lock) { 
+			FetchAndAdd(&lock->turn);
+		}
+	~yield() 													P340
+		void lock() {
+			while (TestAndSet(&flag, 1) == 1)
+        		yield(); // give up the CPU
+		}
+		-used in a spinning loop to return back the control of
+		 CPU immediately instead of running out the whole time
+		 slice
+		-still waste time when doing context switch and face
+		 the trouble of starvation
+	~lock with queues, test-and-set, yield and wakeup 			P341 Figure 28.8
+		-park(): to put a calling thread to sleep
+		-unpark(threadID): to wake a particular thread
+		typedef struct __lock_t { 
+			int flag;
+			int guard;
+    		queue_t *q;
+		} lock_t;
+		void lock_init(lock_t *m) {
+			m->flag = 0;
+			m->guard = 0;
+    		queue_init(m->q);
+		}
+		void lock(lock_t *m) {
+			while (TestAndSet(&m->guard, 1) == 1)
+				;
+			if (m->flag == 0) {
+		        m->flag = 1;
+		        m->guard = 0;
+    		} else {
+		        queue_add(m->q, gettid());
+		        m->guard = 0;
+		        park();
+			}
+		}
+		void unlock(lock_t *m) {
+			while (TestAndSet(&m->guard, 1) == 1)
+				;
+			if (queue_empty(m->q))
+				m->flag = 0;
+			else 
+				unpark(queue_remove(m->q));
+			m->guard = 0;
+		}
+		-wakeup/waiting race
+			if interrupted by another thread holding lock, the
+			thread which is about to park() is likely to sleep 
+			forever, to avoid this, use setpark() before m->guard = 0;
+			and the thread would return at once
+
+chapter29
+	~thread safety of data structure 							P346
+		-place the operation of shared data between fetch and 
+		 relise of lock but the performance is not guaranteed
+		-sloppiness
+			allocate burden to some logical local data 
+			structure, when any one of them reachs threshold,
+			it pushs the data to a logical global structure
+			there is a accuracy/performance trade-off
+	~sloppy counter implementation
+		typedef struct __counter_t {
+			int 			global;
+			pthread_mutex_t glock;
+			int 			local[NUMCPUS];
+			pthread_mutex_t llock[NUMCPUS];
+			int 			threshold;
+		}counter_t;
+		void init(counter_t *c, int threshold) {
+			c->threshold = threshold;
+			c->global = 0;
+			pthread_mutex_init(&c->glock, NULL);
+			for(int i=0;i<NUMCPUS;i++){
+				c->local[i] = 0;
+				pthread_mutex_init(&c->llock[i],NULL);
+			}
+		}
+		void update(counter_t *c, int threadID, int amt) {
+			pthread_mutex_lock(&c->llock[threadID]);
+			c->local[threadID] += amt;
+			if (c->local[threadID] >= c->threshold) {
+				pthread_mutex_lock(&c->glock);
+				c->global += c->local[threadID];
+				pthread_mutex_unlock(&c->glock);
+				c->local[threadID] = 0;
+			}
+			pthread_mutex_unlock(&c->llock[threadID]);
+		}
+		int get(counter_t *c) {
+			pthread_mutex_lock(&c->glock);
+			int val = c->global;
+			pthread_mutex_unlock(&c->glock);
+			return val;
+		}
+	~avoid premature optimization
+		only do optimization when necessary
+
+chapter30
+	~routines for condition variables
+		int done = 0;							//state variable
+		pthread_mutex_t m = PTHREAD_MUTEX_INITIALIZER; 
+		pthread_cond_t c = PTHREAD_COND_INITIALIZER;
+		//
+		void thr_exit() {						//wake another thread
+		    Pthread_mutex_lock(&m);
+		    done = 1;
+		    Pthread_cond_signal(&c);
+		    Pthread_mutex_unlock(&m);
+		}
+		//
+		void thr_join() {
+		    Pthread_mutex_lock(&m);
+		    while (done == 0)
+		    	Pthread_cond_wait(&c, &m);		/release the lock and put the calling thread to sleep
+		    Pthread_mutex_unlock(&m);
+		}
+	~the producer/consumer (bound buffer) problem				P364
+		//
+		int buffer[MAX];
+		int fill  = 0;
+		int use   = 0;
+		int count = 0;
+		//
+		void put(int value){
+			buffer[fill] = value;
+			fill = (fill+1) % MAX;
+			count++;
+		}
+		//
+		int get(){
+			int tmp = buffer[use];
+			use = (use+1) % MAX;
+			count--;
+			return tmp;
+		}
+		//
+		cond_t empty,fill;
+		mutex_t mutex;
+		//
+		void *producer(void *arg){
+			int i;
+			for(i=0;i<loops;i++){
+				Pthread_mutex_lock(&mutex);
+				while (count==MAX)
+					Pthread_cond_wait(&empty,&mutex);
+				put(i);
+				Pthread_cond_signal(&fill);
+				Pthread_mutex_unlock(&mutex);
+			}
+
+		}
+		//
+		void *consumer(void *arg){
+			int i;
+			for(i=0;i<loops;i++){
+				Pthread_mutex_lock(&mutex);
+				while(count==0)
+					Pthread_cond_wait(&fill,&mutex);
+				int tmp = get();
+				Pthread_cond_signal(&empty);
+				Pthread_mutex_unlock(&mutex);
+				printf("%d/n",tmp);
+			}
+		}
+		-thread awakes from Pthread_cond_wait would not run 
+		 immediately but added to ready queue, some other 
+		 threads could run before it, when it begins to run it 
+		 would continue from Pthread_cond_wait holding the lock
+		-use while loop instead of if to avoid the situation 
+		 where cond is invalid but the resumed thread still 
+		 continues
+		-Mesa semantics: 
+			woken thread will be added to ready queue
+		-Hoare semantics: 
+			woken thread will run immediately upon being woken
+		-use mutiple condition variables to wake different 
+		 types of threads
+		-spurious wakeups:
+			some implementation may result in two threads get 
+			woken up though just a single signal
+	~covering condition 										P372
+		-covers all the cases where a thread needs to wake up
+		-pthread cond broadcast()
+		 this code would wake all threads waiting for the 
+		 particular condition variable
+
+chapter31
+	~semaphores 												P376
+			//initialize a semaphore
+			  second argument: if 0 the semaphore is shared 
+			  	between threads in the same process
+			  third argument: initialized value
+		#include <semaphore.h>
+		sem_t s;
+		sem_init(&s, 0, 1);
+			//explanation of two routines, performed atomically
+		int sem_wait(sem_t *s) {	
+			decrement the value of semaphore s by one wait 
+			if value of semaphore s is negative
+		}//aka P()
+		int sem_post(sem_t *s) {
+			increment the value of semaphore s by one 
+			if there are one or more threads waiting, wake one
+		}//aka V()
+	~binary semaphores(locks)									P378
+		//functions as a lock
+		sem_t m;
+		sem_init(&m, 0, 1);
+		sem_wait(&m);
+			// critical section here
+		sem_post(&m);
+	~semaphores as condition variables 							P379
+		sem_init(&m, 0, 0);
+	~the producer/consumer (bounded-buffer) problem 			P381
+			//
+		int buffer[MAX];
+		int fill = 0;
+		int use = 0;
+		sem_t empty;
+		sem_t full;
+		sem_t mutex;
+		sem_init(&empty,0,MAX);
+		sem_init(&full,0,0);
+		sem_init(&mutex,0,1);
+			//
+		void *producer(void *arg){
+			int i;
+			for(i=0;i<loops;i++){
+				sem_wait(&empty);
+				sem_wait(&mutex);
+				put(i);
+				sem_post(&mutex);
+				sem_post(&full);
+			}
+		}
+			//
+		void *consumer(void *arg){
+			int i;
+			for(i=0;i<loops;i++){
+				sem_wait(&full);
+				sem_wait(&mutex);
+				int tmp = get();
+				sem_post(&mutex);
+				sem_post(&empty);
+				printf("%d/n",tmp);
+			}
+		}
+			//
+		void put(int value){
+			buffer[fill] = value;
+			fill = (fill+1) % MAX;
+		}
+		int get(){
+			int tmp = buffer[use];
+			use = (use+1) % MAX;
+			return tmp;
+		}
+		-do not remember mutex to realise mutual exclusion
+		-be careful of the position of mutex to avoid deadlock
+	~reader-writer locks										P385
+			//
+		typedef struct _rwlock_t{
+			sem_t lock;
+			sem_t writelock;
+			sem_t fairlock; 			//by Woozie
+			int   readers;
+		} rwlock_t;
+			//
+		void rwlock_init(rwlock *rw){
+			rw->readers = 0;
+			sem_init(&rw->lock,0,1);
+			sem_init(&rw->writelock,0,1);
+			sem_init(&rw->fairlock,0,1);
+		}
+			//
+		void rwlock_acquire_readlock(rwlock_t *rw){
+			sem_wait(rw->fairlock);		//by Woozie
+			sem_wait(rw->lock);
+			rw->readers++;
+			if(rw->readers==1)
+				sem_wait(rw->writelock);
+			sem_post(rw->lock);
+			sem_post(rw->fairlock); 	//by Woozie
+		}
+			//
+		void rwlock_release_readlock(rwlock_t *rw){
+			sem_wait(rw->lock);
+			rw->readers--;
+			if(rw->readers==0)
+				sem_post(rw->writelock);
+			sem_post(rw->lock);
+		}
+			//
+		void rwlock_acquire_writelock(rwlock_t *rw){
+			sem_wait(rw->fairlock);		//by Woozie
+			sem_wait(rw->writelock);
+			sem_post(rw->fairlock);		//by Woozie
+		}
+			//
+		void rwlock_release_writelock(rwlock_t *rw){
+			sem_post(rw->writelock);
+		}
+		-use fairlock to prevent writer from being starved
+	~the dining philosophers 									P387
+			//each philosopher
+		while(1){
+			think();
+			getforks();
+			eat();
+			putforks();
+		}
+			//
+		int left(int p) { return p; }
+		int right(int p){ return (p+1) % NUM; }
+			//
+		void getforks() {
+  			if (p == NUM-1) {
+			    sem_wait(forks[right(p)]);
+			    sem_wait(forks[left(p)]);
+  			} else {
+		    sem_wait(forks[left(p)]);
+		    sem_wait(forks[right(p)]);
+		    }
+		}
+		void putforks(){
+			sem_post(forks[left(p)]);
+			sem_post(forks[right(p)]);
+		}
+	~semaphore implementation using locks and VCs				P390
+			//
+		typedef struct _sem_t{
+			int value;
+			pthread_mutex_t lock;
+			pthread_cond_t  cond;
+		} sem_t;
+			//
+		void sem_init(sem_t *s, int value){
+			s-> value = value;
+			lock = PTHREAD_MUTEX_INITIALIZER;
+			cond = PTHREAD_COND_INITIALIZER;
+		}
+			//
+		void sem_wait(sem_t *s){
+			Pthread_mutex_lock(&s->lock);
+			while(s->value <= 0)
+				Pthread_cond_wait(&s->cond, &s->lock);
+			s->value--;
+			Pthread_mutex_unlock(&s->lock);
+		}
+		void sem_post(sem_t *s){
+			Pthread_mutex_lock(&s->lock);
+			s->value++;
+			Pthread_cond_signal(&s->cond);
+			Pthread_mutex_unlock(&s->lock);
+		}
+
+chapter32
+	~non-deadlock bugs 											P395
+		-atomicity-violation bugs
+			resulted because of lack of locks
+		-order violation bugs
+			use condition variables to limit order of threads
+	~deadlock bugs 												P398
+		-modularity may result in deadlocks
+		-conditions need to hold for a deadlock to occur
+			-mutual exclusion
+				threads claim exclusive control of resources
+			-hold-and-wait
+				threads hold resources allocated to them while 
+				waiting for additional resources
+			-no preemption
+				Resources (e.g., locks) cannot be forcibly 
+				removed from threads that are holding them
+			-circular wait
+			-deadlocks are possible only when four conditions
+			 	met at the same time
+		-prevention
+			-circular wait
+				provide a total ordering, that means having a 
+				fixed order to access locks
+			-hold-and-wait
+				can be avoided by acquiring all locks at once
+					//
+				lock(prevention);
+				lock(L1);
+				lock(L2);
+				...
+				unlock(prevention);
+			-no preemption
+				top:
+					lock(L1);
+					if (trylock(L2) == -1) {
+					    unlock(L1);
+					    goto top;
+					}
+				-livelock
+					two threads could both be repeatedly 
+					attempting this sequence and repeatedly 
+					failing to acquire both locks, add a random 
+					delay to solve it
+			-mutual exclusion 									P402
+				use instructions to achieve wait-free, no lock 
+				 needed
+					//CompareAndSwap, run as a whole instruction
+				int CompareAndSwap(int *address, int expected, int new){
+					if(*address == expected){
+						*address = new;
+						return 1;		//success
+					}
+					return 0;			//failure
+				}
+					//example 1
+				void AtomicIncrement(int *value, int amount){
+					do{
+						int old = *value;
+					}while(CompareAndSwap(value,old,old+amount==0));
+				}
+					//example 2
+				void insert(int value)
+					node_t *n = malloc(sizeof(node_t));					
+					assert(n != NULL);
+					n->value = value;
+					do{
+						n->next = head;
+					}while(CompareAndSwap(&head,n->next,n)==0);
+				}
+			-avoid deadlock via scheduling 						P403
+				schedule the order of threads to prevent those
+				that would result in deadlock running at the 
+				same time, however it decreases concurrency and 
+				performance
+			-detect and recover
+				detect periodically and restart
+
+chapter33
+	~event-based concurrency 									P408
+		-principle
+			-wait for event to happen and react it by specific 
+			 event handler
+			-only one handler at one time
+			-explicit control over scheduling, determine which
+			 handler to run next
+		-event loop  					
+				//pseudocode
+			while (1) {
+    			events = getEvents();
+   				for (e in events)
+        			processEvent(e); 		//event handler
+			}
+	~select() (poll()) system calls								P409
+		-check I/O descriptor sets to see if some are ready for
+		 reading,  writing, or have errors
+			//API
+		int select(int nfds,
+		           fd_set *restrict readfds,
+				   fd_set *restrict writefds,
+				   fd_set *restrict errorfds,
+				   struct timeval *restrict timeout);
+			//man page
+		first argument nfds: 
+			scope of discriptors to be examed in each set 
+			(0 to nfds-1)
+		following three arguments: 
+			address of three descriptor sets
+		last argument timeout:
+			timeout to return from select, 0 means return 
+			immediately and null means block indefinitely
+		return int: 
+			total number of ready descriptors in all the sets
+		behaviour:
+			replaces the given descriptor sets with subsets 
+			that are ready for the requested operation
+		-using select() 										P410
+		-event does not use lock so simpler
+	~blocking and non-blocking interfaces 						P410
+		-blocking interfaces (synchronous interfaces)
+			do all of the work before returning to the caller
+		-non-blocking interfaces (asynchronous interfaces)
+			begin some work but return immediately, do its work
+			in the background
+	~blocking system calls and asynchronous I/O 				P412
+		-if event-based program makes system calls which could
+		 block (I/O), it would waste resource
+		-solution: asynchronous I/O
+		 some interfaces enable application to issue IO request 
+		 and return control immediately, and some other
+		 interfaces can tell application whether IO is finished
+		 (see aiocb, aio_read, aio_error in page 413)
+	~state management 											P415
+		state of current event handler should be saved manually
+		when asynchronous system call finally finishes, it 
+		continues
+	~other problems 											P416
+		-when used on multiple CPUs synchronization problems is
+		 unavoidable so locks is needed
+		-it does not integrate well with some system activities
+		 such as paging, if blocking the performance is 
+		 decreased
+		-hard to manage over time, if some semantics of 
+		 routines changed, the related handler may also need
+		 change
+
+chapter36
+	~system architecture 										P424 Figure 36.1
+		memory bus for memory, general I/O bus (PCI) for 
+		higher-performance I/O devices, peripheral bus 
+		(SCSI, SATA, USB) for slowest devices
+	~device model 												P425 Figure 36.2
+		-interface (three registers)
+			-status
+			-command
+			-data
+		-internal hardwares
+		//PIO protocol
+		While (STATUS == BUSY)
+			; // wait until device is not busy
+		Write data to DATA register
+		Write command to COMMAND register
+		(Doing so starts the device and executes the command) 
+		While (STATUS == BUSY)
+			; // wait until device is done with your request
+	~polling and interrupt
+		-light and multiple IO request (networks) should use 
+		 polling (while loop to consult if device is ready, aka 
+		 programmed I/O (PIO)) to avoid live lock
+		-interrupt can decrease the time for CPU to wait device
+		 get ready, when IO request is finished OS would be 
+		 interrupted to continue with a handler, but context
+		 switch is time-costing
+		-hybird of the two approach is adopted
+		-coalescing
+			multiple interrupts are coalesced into a single 
+			interrupt to decrease the time for context switch,
+			but it increase the latency of a request
+	~DMA (direct memory access)									P428
+		DMA engine can release CPU from the burden of 
+		transfering data from and to device by itself, CPU just
+		need to tell the engine some information, when IO is 
+		done, CPU is informed by DMA with an interrupt
+	~device interaction 										P429
+		-I/O instructions
+			OS sends data to specific device registers using
+			instructions which usually privileged
+		-memory-mapped I/O
+			some part of the address space is reserved for IO 
+			mapping, so no special instructions are needed, 
+			data from&to these addresses would be passed 
+			from&to devices instead of memory
+	~device driver 												P430 Figure 36.3
+		software in the OS that knows in detail how a device 
+		works at the lowest level
+
+chapter37 hard disk drives
+	~interface 													P438
+		-sectors
+			512B each with a number to identify it
+		-address space
+			0 - n-1 if it has n sectors
+		-multi-sector operations
+			possible, file systems usually read or write 4KB at
+			a time, however only a single 512-byte write is 
+			atomic
+		-access
+			accessing blocks in a contiguous chunk is usually 
+			faster than accessing randomly
+	~components of disk 										P439
+		-platter
+			a disk usually has more than one platter
+		-surface	
+			each side of a platter
+		-spindle
+			where platters are bound together around and spin
+		-rotations per minute (RPM)
+			rate of rotation, typical 7,200 RPM to 15,000 RPM 
+			range
+		-track
+			concentric circle on surface where data is encoded
+		-disk head
+			sense or change magnetic patterns
+		-disk arm
+			where disk head is installed and it moves accross
+			surface to the position over the desired track
+	~hard disk I/O time and procedure							P440
+		-seek
+			move the arm to the right track
+			-acceleration phase
+				arm gets moving
+			-coasting phase
+				moving at full speed
+			-deceleration phase
+				arm slows down
+			-settling phase
+				head is carefully positioned over the correct
+				track, time-cost, around 0.5 to 2 ms
+		-rotational delay
+		-transfer
+		-some other details
+			-track skew 										Figure 37.4
+				skew between different tracks so some rotation 
+				time is saved
+			-multi-zoned disk drives
+				outer tracks tend to have more sectors than 
+				inner tracks
+			-cache (track buffer)
+				drive might decide to read in all of the 
+				sectors on that track and cache them so it can
+				quickly respond to requests to the same track
+			-write back caching/write through
+				acknowledge the write has completed when it has 
+				put the data in its memory / has actually been 
+				written to disk
+	~I/O time 													P443
+		-T(I/O) = T(seek) + T(rotation) + T(transfer)
+		-average seek time is 1/3 of full seek time
+		because time for transfer is relatively small and could
+		even be neglected, so sequential IO is much faster than
+		random IO
+	~disk scheduling 											P447
+		time cost of disk request is known unlike process, so
+		 scheduler tries to finish shortest request first to
+		 reduce turnaround time
+		-shortest seek time first (SSTF)
+			always do request on the nearest track first
+			two problems:
+				-drive geometry unknown to OS (do not known 
+				 which track is nearest), use 
+				 nearest-block-first(NBF) instead
+				-starvation
+		-elevator (SCAN) 										P448
+			moves across the disk servicing requests in order 
+			 across the tracks
+			-sweep: a single pass across the disk
+			-variants
+				-F-SCAN: 
+					freezes the queue to be serviced when it is
+					doing a sweep to prevent starvation
+				-C-SCAN(circular SCAN): 
+					sweeps from outer-to-inner, and then 
+					inner-to-outer
+		-shortest positioning time first (SPTF) 				P449
+			take rotation time into account, find the nearest
+			request considering both rotation and seek
+
+chapter38 redundant arrays of inexpensive disks (RAIDs)
+	~RAID level 0: striping 									P459 table 38.1 38.2
+		spread blocks across the disks in a round-robin fashion
+		-stripe: chunks in the same row
+			Disk 0 	Disk 1 	Disk 2 	Disk 3
+		   --------------------------------
+			  0       2 	  4 	  6 		chunk size:
+			  1 	  3 	  5 	  7 		2blocks 
+			  8 	  10 	  12 	  14
+			  9 	  11 	  13 	  15
+		-chunk size: 
+			number of blocks on each disk before moving on to 
+			 the next
+			small chunk increases the parallelism of reads and
+			 writes to a single file, but increases positioning
+			 time to access blocks across multiple disks
+			big chunk reduces parallelism but reduces
+			 positioning time
+		-performance metrics
+			-single-request latency
+				it reveals how much parallelism can exist
+				during a single logical I/O operation
+			-steady-state throughput
+				total bandwidth of many concurrent requests
+			-R MB/s: transfer speed under random workload
+			-S MB/s: transfer speed under sequential workload
+		-analysis
+			-single-request latency perspective
+				identical to a single disk
+			-steady-state throughput perspective
+				N disks, N*R MB/s for random workload, S*R MB/s
+				for sequential workload, an upper bound of all
+				RAIDs
+	~RAID level 1: mirroring 									P462
+		make more than one copy of each block in the system, 
+			each copy should be placed on a separate disk, when
+			read only one disk read is necessary, when write
+			all copies in disks update are compulsory
+		-RAID-10 (first mirror then stripe)
+			Disk 0 	Disk 1 Disk 2 	Disk 3 	Disk 4 	Disk 5
+		   ------------------------------------------------
+			  0 	  0 	 1 		  1 	  2 	  2
+			  3  	  3 	 4 		  4 	  5 	  5
+			  6 	  6 	 7 		  7 	  8 	  8
+			  9 	  9 	 10 	  10 	  11 	  11
+		-RAID-01 (first stripe then mirror)
+			Disk 0 	Disk 1 Disk 2 	Disk 3 	Disk 4 	Disk 5
+		   ------------------------------------------------
+			  0 	  1 	 2 		  0 	  1 	  2
+			  3  	  4 	 5 		  3 	  4 	  5
+			  6 	  7 	 8 		  6 	  7 	  8
+			  9 	  10 	 11 	  9 	  10 	  11
+		-write-ahead log
+			all disk operations are logged first and then 
+			carried on, if a power shutdown happens, a recovery
+			procedure would replay transactions to make 
+			mirrored copies the same
+		-analysis
+			-capacity
+				with mirroring level L, useful capacity
+			-reliability
+				tolerate the failure of any one disk, up to 
+				N/2 failures are acceptable if lucky enough
+			-performance
+				-a single read request latency
+					direct the read to one of its copies
+				-a single write request latency
+					multiple write to duplicate disks, though
+					writes happen in parallel but total time is
+					determined by the slowest write
+				-steady-state throughput 						P464
+				 -sequential workload
+				  maximum bandwidth of writing is N*S/L
+				  maximum bandwidth of reading is N*S/L 		
+				 -random workload
+				  maximum bandwidth of writing is N*S/L
+				  maximum bandwidth of reading is R*S
+	~RAID Level 4: parity
+		-parity disk: a disk used to recover from a single disk 
+			failure, bits in parity disk is calculated by XOR(
+			if input has even 1, output is 0, if odd, output 0)
+			single disk failure can be recovered by XOR
+				Disk 0 	Disk 1 	Disk 2 	Disk 3 	Disk 4
+			   ----------------------------------------
+			   	  0 	  1 	  2 	  3 	  P0
+			   	  4 	  5 	  6 	  7 	  P1
+		-analysis
+			-capacity: N-1
+			-reliability: 1 disk failure and no more
+			-performance
+			 -steady-state throughput
+			  -sequential workload
+			 	(N-1)*S MB/s both for read and write
+			  -random workload
+			    -maximum bandwidth of reading is (N−1)*R MB/s
+			    -random writes
+			     -additive parity
+			     	read all other parallel blocks in the same
+			     	row and caculate new parity block
+			     -subtractive parity
+			     	use old block of the ready-to-write disk,
+			     	the corresponding parity block and new block
+			     	to calculate new parity block
+			     	  P(new) = (C(old) XOR C(new)) XOR P(old)
+			     	use which kind of parity is determined by
+			     	parallel write block number
+			     -small-write problem
+			     	even data disks can be written parallel, the
+			     	bottleneck is parity disk, it needs to be
+			     	read and written for every logical write
+			     	maximum bandwidth of writing is R/2 MB/s
+			 -a single request latency
+			 	-read: the same as a single disk request
+			 	-write: twice latency of a single disk request,
+			 		need an additional read
+	~RAID level 5: rotating parity 								P469
+		-parity block rotates accross drives to solve 
+			small-write problem
+			Disk 0 	Disk 1 	Disk 2 	Disk 3 	Disk 4
+		   ----------------------------------------
+		   	  0 	  1 	  2 	  3 	  P0
+		   	  4 	  5 	  6 	  P1 	  7
+		   	  8 	  9 	  P2 	  10 	  11
+		   	  12      P3 	  13 	  14 	  15
+		   	  P4 	  16 	  17 	  18 	  19
+		-analysis
+			almost the same as RAID level 4 except:
+			-throughput random read:  N*R MB/s
+			-throughput random write: N*R/4 MB/s, because for
+				every logical write needs two physical reads
+				and two physical writes
+	~RAID comparision 											P470 table 38.7
+
+chapter39
+	~files and directories 										P476
+		-two virtualizations of storage
+		-file
+			a linear array of bytes, each has a low-level name
+			called inode number
+		-directory
+			also has an inode number, stores a list of pairs
+			(user-readable name, low-level name), place 
+			directories within other directories can generate a 
+			directory tree, which starts from root directory"/"
+	~file system interface
+	 -creating files 											P478
+	 		//create a file called “foo” in the current working directory
+	 	int fd = open("foo", O_CREAT | O_WRONLY | O_TRUNC);
+	 	O_CREAT, O_WRONLY, O_TRUNC are flags, return value fd 
+	 	is a file descriptor
+	 -reading and writing files 								P479
+	 		//terminal
+		 	terminal> echo hello > foo //redirect input to file 'foo'
+		 	terminal> cat foo 		   //use cat to see content of 'foo'
+			hello
+			terminal>
+		-strace/dtruss/truss used to find out system calls when 
+			a process
+		-file descriptor first three digits are occupied, 0 for
+			standard input, 1 for standard output, 2 for 
+			standard error, so if a process opens a new file,
+			fd starts from 3
+					//after prompt> strace cat foo	
+				open("foo", O_RDONLY|O_LARGEFILE) 			// =3 
+				read(3, "hello\n", 4096) 					// =6 
+				write(1, "hello\n", 6) 						// =6 
+				hello
+				read(3, "", 4096) 							// =0 
+				close(3) 									// =0 
+		-read() has three arguments, file descriptor, a 
+			buffer where the result is saved and size of 
+			buffer, return number of bytes it read, 
+			write() is similar
+	 -reading and writing not sequentially 						P481
+	 	system call lseek() is used to update the current 
+	 	 offset, it doesn't issue IO operation
+	 	 	off_t lseek(int fildes, off_t offset, int whence);
+	 	-whence: 
+	 		-SEEK_SET: offset is set to offset bytes
+	 		-SEEK_CUR: offset is set to its current location 
+	 			plus offset bytes
+	 		-SEEK_END: offset is set to the size of the file 
+	 			plus offset bytes
+	 -writng immediately 										P482
+	 	write() doesn't write immediately and would buffer data
+	 		first and issue operation later
+	 	fsync(int fd) would force all dirty data related to the
+	 		file to disk immediately, note directory may also
+	 		need fsync() when some new created files are 
+	 		contained within it
+	 -rename files 												P483
+	 			//mv command is used to rename a file
+	 		terminal> mv foo far
+	 	rename("foo.txt.tmp", "foo.txt");
+	 	note: rename() is an atomic call
+	 -get information about files 								P484
+	 	-metadata: information about a file
+	 	-system call stat(), fstat()
+	 		int stat(const char *path, struct stat *buf);
+	 		int fstat(int filedes, struct stat *buf);
+	 	-struct stat: save metadata 							P484
+	 		struct stat {
+			    dev_t		st_dev;			/* ID of device containing file */
+			    ino_t		st_ino;			/* inode number */
+			    mode_t		st_mode;		/* protection */
+			    nlink_t		st_nlink;		/* number of hard links */
+			    uid_t		st_uid;			/* user ID of owner */
+			    gid_t		st_gid;			/* group ID of owner */
+			    dev_t		st_rdev;		/* device ID (if special file) */
+			    off_t		st_size;		/* total size, in bytes */
+			    blksize_t	st_blksize;		/* blocksize for filesystem I/O */ 
+			    blkcnt_t	st_blocks;		/* number of blocks allocated */
+			    time_t		st_atime;		/* time of last access */
+			    time_t		st_mtime;		/* time of last modification */
+			    time_t		st_ctime;		/* time of last status change */
+			};
+	 	-terminal command stat
+	 		terminal> stat filename
+	 	-inode: structure kept by file system to save info of
+	 		metadata of a file
+	 -removing files 											P485
+	 			//rm command is used to remove files
+	 		ternimal> rm filename
+	 			//system call unlink()
+	 		unlink("filename")
+	 			return 0 if success
+	 -making directories 										P485
+	 	-create a directory
+	 			// mkdir command
+	 		ternimal> mkdir filename
+	 			//system call mkdir()
+	 		mkdir("filename",mode)
+	 	-one empty directory has two entries, "." refers to 
+	 		itself, ".." refers to its parent
+	 -reading directories 										P486
+	 			//command ls is used to read a directory
+	 		terminal> ls dirname
+	 			//system calls
+	 		DIR *dp = opendir(".");
+	 		struct dirent *d = readdir(dp);	// can be put into a loop, every time call it, it would read the next dirent
+	 		closedir(dp);
+	 			//struct dirent, directory entry saving information of files and directories in the current directory
+	 		struct dirent{
+	 			char 			d_name[256]; 	//file name
+	 			ino_t 			d_ino;			//inode number
+	 			off_t 			d_off;			//offset to the next dirent
+	 			unsigned short 	d_reclen;		//length of this record
+	 			unsigned int 	d_type;			//type of file
+	 		};
+	 -deleting directories 										P487
+	 			//command rmdir is used to delete a directory
+	 		terminal> redir dirname
+	 			//system call rmdir() is used to delete a 
+	 				directory
+	 		rmdir(dirname)
+	 		note: can only delete empty directory
+	 -hard links 												P487
+	 			//command ln is used to create a hard link for 
+	 				a file
+	 		terminal> ln filename filename2
+	 	hard links have the same inode number, rm (unlink) only 
+	 	delete single hard link so the file can be accessed 
+	 	from other hard links, the number of hard links are 
+	 	stored in struct stat, create a hard link is just
+	 	create a new dirent with same inode number
+	 -symbolic links (soft links) 								P489
+	 	-directories can not have hard links to avoid cycle in 
+	 		directory tree, files can not have hard links in
+	 		other disk partitions
+	 			//still use command ln but add a flag -s
+	 		ln -s filename1 filename2
+	 		symbolic link is the third type file in file 
+	 		system, it has a unique inode number, it stores
+	 		file name of its linking object, all operations
+	 		except deletion can make sense, when the original
+	 		file is deleted, it becomes a dangling reference,
+	 		it can refer to a directory or a file from other
+	 		disk partitions
+	 -make and mount a file system 								P491
+	 	-mkfs is used to create a new file system, it needs a 
+	 		device and a file system type as input
+	 	-mount is used to mount the unmounted file system to a
+	 		uniform file-system tree
+	 		terminal> mount -t ext3 /dev/sda1 /home/users 
+	 		"/home/users" is the target mount point
+	 	-mount command can check all file systems mounted on
+	 		the system
+
+chapter40 vsfs
+	~overall organization 										P497
+		-block: disk is divided into blocks
+		-data region: region on disk used to store user data
+		-inode structure: stores metadata and other information
+			of a file
+		-inode table: portion of disk where stores an array of
+			inode structure
+		-allocation structure: track whether inodes or data 
+			blocks are free or allocated
+			-data bitmap: use 1 bit to indicate if a data block
+				is free or in-use
+			-inode bitmap: similar to above but for inodes
+		-superblock: save information about this file system
+	~inode (index node)											P499
+		-inode number: used to index into an array of on-disk 
+			inodes to find out the inode
+		-multi-level index
+			inode saves pointer points to the file, if the
+			file is small, it can point to the file directly,
+			if the file is large, inde first has an indirect
+			pointer to a block that contains more pointers,
+			etc.
+	~directory organization 									P504
+		directory can be viewed as a special file so it stores
+		in data region like other files, it contians pairs to
+		match inode number and file name
+	~access paths (reading and writing)			 				P505
+		-reading
+		 the inode number of root directory is well-known, find
+		 the inode number of next directory according to its
+		 name from root's data block, do it continuously until
+		 reach the data block of the desire file
+		-writing
+		 plenty of reads and writes are involved: data bitmap,
+		 inode bitmap(if creating a new file), parent directory
+		 of the file, the file itself
+		-caching and buffering
+		 use caching to reduce duplicated reading, use
+		 buffering to hold bunch of writing together to reduce
+		 IO number, help the system to schedule to increase
+		 efficiency or even avoid unnecessary work
+
+chapter41
+	~Fast File System (FFS)	 									P516
+		-disk aware: meet disk feature to increase performance
+	~cylinder group (block groups) 								P516
+		divide the whold disk into several groups, each group
+		has super block, inode bitmap, data bitmap, inode and
+		data block regions so it can decrease seek time
+	~policy to allocate files and directories	 				P517
+		-directories placement
+			find a group with low number of allocated 
+			directories and a high number of free inodes in 
+			order to 
+		-files placement
+			allocate data blocks of a file in the same group
+			where its inode is stored, all files of a 
+			directory should be allocated in the same group
+			where the directory stores
+	~large file exception 										P519
+		divide the large file into chunks, insert each chunk
+		into a block group to avoid hurting file-access 
+		locality (policy metioned before), the bigger chunks
+		are, the less time spent on disk positioning
+	~sub-blocks 												P521
+		use 512-byte blocks to decrease internal fragmentation,
+		when the tiny file grows, write data in sub-blocks into
+		standard blocks (4KB) and release sub-blocks, use
+		buffer writes to decrease IO operation
+	~parameterization 											P522 Figure 41.3
+		change the layout of blocks in a track to avoid over
+		fast rotation
+	~track buffer 												P522
+		read all blocks in a track into a track buffer(internal
+		disk cache), return the desired data from the cache
+
+chapter42
+	~crash-consistency problem 									P530
+		one write() may update inode, data bitmap and data 
+		blocks, if not all of them are updated because of power
+		shutdown or OS crash, resulting three types of problems
+		-inconsistency in file system data structures
+			fail to update either inode or data bitmap
+		-space leaks
+			fail to update inode so data block can not be found
+		-return garbage data
+			fail to update data blocks
+	~file system checker (FSCK) 								P530
+		fsck UNIX tool is used to check and repair a disk 
+		partition, it can not fix garbage data, it has a high
+		time cost
+	~journaling (write-ahead logging) 							P532
+		-before updating on-disk structures, write logs into
+			the journal
+		-journal: structure used to store logs, usually placed
+			within the partition (parallel with other groups)
+			or in other disks
+		-data journaling 										P533
+			-an available mode in ext3, journals all user data
+					----------------------------------------
+			journal | TxB | I[v2] | B[v2] | Db | TxE | --->
+					----------------------------------------
+			-TxB: transaction begin includes information about
+				the update and transaction identifier (TID)
+			-physical logging: middle three blocks, contains
+				exact physical contents of the update
+			-logical logging: an alternate idea of physical
+				logging, organized compactly to save space and
+				get better performance
+			-TxE: final block to indicate the end of the 
+				transaction
+		-protocol of data journaling
+			1.journal write: write the transaction, includes
+				TxB, metadata and data to journal, wait for 
+				these writes to complete (an interrupt)
+			2.journal commit: write transaction commit block
+				(TxE) to journal, wait for these writes to 
+				complete, transaction is said to be
+				committed
+			3.checkpoint: update the on-disk structures to
+				their final locations
+			4.free: Some time later, mark the transaction free
+				in the journal by updating the journal 
+				superblock
+		-reason for divide journal write into two parts (write and commit)
+			disk scheduler may write data (Db) at last, if 
+			crash when transmitting data then the corrupted 
+			data can not be recognized, beware the cache in 
+			disk could still change the order of write
+		-recovery 												P536
+			if crash happens before journal commit is completed
+			, just skip the update, if crash happens within 
+			checkpoint, recovery process tries to do the update
+			again
+		-batching log updates
+			use one single global transaction containing all of 
+			the updates to improve performance
+		-making the log finite 									P537
+			-journal super block: a block in journal which 
+				includes its information (like the location of 
+				oldest and newest trasactions)
+			-when checkpoint is completed, free the 
+				transaction
+		-ordered journaling (metadata journaling) 				P538
+			-it does not write data into journal but directly
+				to the proper location, this should be done
+				before journal commit
+						-----------------------------------
+				journal | TxB | I[v2] | B[v2] | TxE | --->
+						-----------------------------------
+			-protocol of metadata journaling
+				1.data write
+				2.journal metadata write
+				3.journal commit
+				4.checkpoint
+				5.free
+		-block reuse 											P540
+			data block of directory is a kind of metadata so it
+			is logged even in metadata journaling mode, error
+			happens when crash before directory log deleted,
+			and the directory data in actual location is reused
+			by other files, when recovery the wasted directory
+			data would be wrote into it and corrupt data, use a
+			revoke record in journaling to indicate a deletion
+	~other approaches											P542
+		-soft updates
+			arrange the order of updating on-disk structures
+			carefully to make sure inconsistent state can never
+			exist
+		-copy-on-write (COW)
+			places new updates to previously unused locations
+			on disk, when some updates are completed, include
+			pointers to the newly updated structures, so the
+			file system is consistent
+		-backpointer-based consistency (BBC)
+			no ordering is enforeced, every block is added with
+			a back pointer, when access a file, check whether
+			the back pointer points to the inode which points
+			to the block, it is consistent
+
+chapter43 log-structured file systems (LFS)
+	~backgrounds 												P546
+		-memory becomes large so memory cache is used to reduce
+			read
+		-transfer bandwidth grows fast so increase sequential
+			write to improve performance
+		-decrease short seeks when updating on-disk metadata
+			structures
+		-should work well with RAIDs
+	~LFS
+		-basic strategy
+			first buffer enough updates in a segment, when the
+			segment is full or timeout, write it in one long, 
+			sequential transfer to an unused part of disk
+		-data and inode: inode locates adjacent to data blocks
+			---------------------------------
+			 |   D1  |  I1  |   D2  |  I2  |
+			---------------------------------
+		-segment
+			use write buffering to group a lot of updates and
+			write it to the disk as a single write, take 
+			advantage of sequential writing
+		-inode map (imap) 										P550
+			take inode number as input and return address of
+			the corresponding inode, it is actually an array,
+			locates behind closely all the other new
+			information
+			------------------------------------------
+			 |   D1  |  I1  |   D2  |  I2  |  imap  |
+			------------------------------------------
+		-checkpoint region 										P551
+			two CR locates at fixed position in disk and save
+			pointers to imaps, they update periodically (about
+			30 seconds)
+		-garbage collection
+			LFS only keeps the latest version of a file, so it
+			clean old dead version of files perioically, it
+			finds out live blocks in old segments and add these
+			live blocks into new segment
+		-determining block liveness 							P555
+			segment summary block: at the head of the segment,
+				it stores information of every block in the 
+				segment about its inode number and offset, so
+				it can determine whether the block is live by
+				finding the inode and use the offset to check
+				if the corresponding pointer in inode points
+				to the block, if not, it is dead
+		-when and which block to clean 							P556
+			periodically clean or when the segment is full,
+			divide segments into two types, hot and cold, hot
+			segments are over-written frequently, cold segments
+			are more stable, so clean cold ones sooner and hot
+			ones later
+		-crash recovery
+			update two CR alternately, each CR has two
+			timestamps at their start and end, when update CR,
+			two timestamps are wrote separately to identify
+			crash, if one CR is wrong, use the other one, then
+			roll forward to recover data
+
+chapter44
+	~disk failure modes 										P562
+		-fail-stop model: 
+			a disk fails entirely or works completely well,
+			easy to detect by disk itself
+		-fail-partial model
+		 -latent-sector errors (LSEs)
+			arise when a disk sector is damaged (by a head
+			crash or others), making the bits unreadable, error
+			correcting codes (ECC) is used to determine whether
+			a block is good or not and if possible fix it
+		 -block corruption
+			silent faults because it is not caused by the disk
+			itself so undetectable
+	~handling latent sector errors 								P564
+		use parity disk in RAID
+	~handling corruption
+		-checksum
+		 -checksum functions
+		  -XOR: if two bits change at the same time, XOR
+		  	checksum would not detect it
+		  -addition
+		  	performing 2’s complement addition over each chunk
+		  	of the data, ignoring overflow
+		  -Fletcher checksum
+		  	a block D consists of bytes d1 ... dn, compute two
+		  	check bytes s1 and s2, s1 = s1 + di mod 255 (for
+		  	all di in D), s2 = s2 + s1 mod 255
+		  -cyclic redundancy check (CRC)
+		  	treat block D as if it is a large binary number and
+		  	divide it by an agreed upon value, take the
+		  	remainder as the value of the CRC
+		  note: even using checksum there is still a chance
+		  	that mistake can not be recognised
+		 -checksum Layout
+		 	-520-byte sector: some disks can group data into a
+		 		520-byte sector which include 8 bytes checksum
+		 		and 512 bytes data
+		 	-Independent blocks to save checksum
+		 		use a normal 512-byte sector to save multiple
+		 		checksums and followed by data which checked by
+		 		these checksum 
+		-misdirected writes
+			add physical identifier (physical ID) to each 
+			checksum, it keeps disk and sector number for 
+			future check
+		-lost writes
+			-write verify (read-after-write)
+				immediately read back the data after a write to
+				make sure data has been wrote correctly
+			-checksum elsewhere in the system
+				includes a checksum in inode to check whether
+				the data block is the right one
+		-scrubbing
+			periodically read through every block and check 
+			whether checksums are still valid
